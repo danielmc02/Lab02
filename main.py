@@ -11,6 +11,8 @@ def main():
     # ! INIT VARIABLES 
     global starting_money 
     global randomized_queen_location 
+    global users_guess
+    users_guess = ""
 
     starting_money = 100
     card_list = [False,False,False]
@@ -31,20 +33,14 @@ def main():
             else:
                 card_list[index] = False
         #? get bet
-        user_bet = get_users_choice()
+        user_bet = get_users_bet(starting_money)
      
-        print_default_cards()
-        while True:
-            users_guess = input("Find the queen: ")
-            if int(users_guess) >= 1 and int(users_guess) <=3:
-                # Valid value
-                break
-            else:
-                print("Invalid range: Please guess 1-3")
-            
-
+        
         #! Subtract 1 from users guess to match list index offset.
         #? In reality a human guess is list index + 1 because we count from 0
+
+        users_guess = get_users_choice()
+
         users_guess_int = int(users_guess) -1
 
         display_queen_loc(randomized_queen_location)
@@ -80,6 +76,19 @@ def main():
     # ? Display the cards with proper index
     # ? Becasue its always 1-3 just manually print 1-3 cards
     
+def get_users_choice():
+    print_default_cards()
+        
+    while True:
+        users_guess = input("Find the queen: ")
+        if int(users_guess) >= 1 and int(users_guess) <=3:
+                # Valid value
+            break
+        else:
+            print("Invalid range: Please guess 1-3")
+
+    return users_guess
+            
 
    
 def print_default_cards():
@@ -116,14 +125,14 @@ def get_users_money():
 
 
 
-def get_users_choice():
+def get_users_bet(money):
     #? Basesd on the example, assume that we inform them their current balance before they bet... makes sense tbh
-    print(f"You have ${starting_money}")
+    print(f"You have ${money}")
     while True:
-     users_bet = get_positive_int(f"How much would you like to bet? (Enter between 1-{starting_money}) ")
-     if(users_bet > starting_money):
-           print(f"Unavailible funds, you only have {starting_money}")
-     elif (users_bet <= starting_money and users_bet >= 1):   
+     users_bet = get_positive_int(f"How much would you like to bet? (Enter between 1-{money}) ")
+     if(users_bet > money):
+           print(f"Unavailible funds, you only have {money}")
+     elif (users_bet <= money and users_bet >= 1):   
         break
      
     return users_bet
