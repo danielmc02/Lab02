@@ -1,23 +1,21 @@
-"""Three Card Monte
-Author: Jimmy Le
-Date: 09/05/2025
+""" LAB #2
+    09/05/2025
+    Student 1: Daniel McCray
+    Student 2: Jimmy Le
 
-Simple guessing / wagering game: find the Queen among three cards.
-Player starts with $100 and may bet each round. If the player guesses
-correctly they receive double their bet (net gain of 2x bet as specified).
-Game ends when player chooses to stop or runs out of money.
+    Three Card Monte: find the Queen among three cards.
+    Player starts with $100 and may bet each round. If the player guesses
+    correctly they receive double their bet. Game ends when player chooses
+    to stop or runs out of money.
 """
 
 import random
-import check_input
-from check_input import get_positive_int, get_yes_no
+from check_input import get_yes_no, get_positive_int, get_int_range
 
 
-def get_users_bet(money: int) -> int:
-    """Prompt for bet (1..money). Uses check_input for validation.
-    Returns the validated bet amount (>0)."""
+def get_users_bet(money):
+    # Ask player for bet; has to be in range and cannot be 0.
     print(f"You have ${money}")
-    # Reuse provided positive int, then range-check.
     while True:
         bet = get_positive_int(f"Enter bet (1-{money}): ")
         if bet == 0:
@@ -28,30 +26,25 @@ def get_users_bet(money: int) -> int:
             return bet
 
 
-def get_users_choice() -> int:
-    """Display face‑down cards and return user's guess (1-3)."""
+def get_users_choice():
+    # Show face-down cards and return user's guess 1-3.
     print_default_cards()
-    # Use check_input range helper to guarantee valid int in range.
-    return check_input.get_int_range("Choose a card (1-3): ", 1, 3)
+    return get_int_range("Choose a card (1-3): ", 1, 3)
 
 
-def display_queen_loc(queen_loc: int) -> None:
-    """Show cards with queen (1-based index)."""
-    layouts = {
-        1: [" Q ", " K ", " K "],
-        2: [" K ", " Q ", " K "],
-        3: [" K ", " K ", " Q "]
-    }
-    trio = layouts[queen_loc]
+def display_queen_loc(queen_loc):
+    # Reveal queen position
+    symbols = ["K", "K", "K"]
+    symbols[queen_loc - 1] = "Q"  # put queen in chosen slot
     print("+-----+ +-----+ +-----+")
     print("|     | |     | |     |")
-    print(f"|{trio[0]}| |{trio[1]}| |{trio[2]}|")
+    print(f"|{symbols[0]:^5}| |{symbols[1]:^5}| |{symbols[2]:^5}|")
     print("|     | |     | |     |")
     print("+-----+ +-----+ +-----+")
 
 
 def print_default_cards():
-    """Show numbered face-down cards."""
+    # Show the 3 face-down card spots (just numbers).
     print("+-----+ +-----+ +-----+")
     print("|     | |     | |     |")
     print("|  1  | |  2  | |  3  |")
@@ -60,19 +53,18 @@ def print_default_cards():
 
 
 def main():
-    money = 100
-    print("- Three Card Monte -\nFind the queen to double your bet!\n")
+    money = 100  # starting bankroll
+    print("Three Card Monte - try to find the Queen to win your bet!\n")
 
     while money > 0:
-        queen_loc = random.randint(1, 3)  # 1-based for simplicity
+        queen_loc = random.randint(1, 3)  # new random spot each round
         bet = get_users_bet(money)
         guess = get_users_choice()
 
-        # Evaluate before revealing queen visually
         if guess == queen_loc:
-            winnings = bet * 2  # Requirement text: receive double their bet
-            money += winnings
-            print(f"Correct! You win ${winnings}.")
+            # Per assignment: player "gains the amount of the bet" when correct
+            money += bet
+            print(f"Nice! You found the queen. You win ${bet}.")
         else:
             money -= bet
             print("Incorrect.")
@@ -81,7 +73,7 @@ def main():
         print(f"Balance: ${money}\n")
 
         if money <= 0:
-            print("You're out of money. Game over.")
+            print("You lose, beat it loser.")
             break
         if not get_yes_no("Play again (Y/N)? "):
             break
