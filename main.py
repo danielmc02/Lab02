@@ -1,142 +1,85 @@
-from check_input import get_positive_int, get_yes_no
+""" LAB #2
+    09/05/2025
+    Student 1: Daniel McCray
+    Student 2: Jimmy Le
+
+    Three Card Monte: find the Queen among three cards.
+    Player starts with $100 and may bet each round. If the player guesses
+    correctly they receive double their bet. Game ends when player chooses
+    to stop or runs out of money.
+"""
+
 import random
+from check_input import get_yes_no, get_positive_int, get_int_range
 
 
-
-
-
-
-def main():
-
-    # ! INIT VARIABLES 
-    global starting_money 
-    global randomized_queen_location 
-    global users_guess
-    users_guess = ""
-
-    starting_money = 100
-    card_list = [False,False,False]
-
-
-
-    print("-Three card Monte-\nFind the queen to double your bet!\n\n")
-
-
-
+def get_users_bet(money):
+    # Ask player for bet; has to be in range and cannot be 0.
+    print(f"You have ${money}")
     while True:
-        randomized_queen_location = random.randrange(0,3)
-
-        for index in range(3):
-            if(index == randomized_queen_location):
-                card_list[index] = True
-
-            else:
-                card_list[index] = False
-        #? get bet
-        user_bet = get_users_bet(starting_money)
-     
-        
-        #! Subtract 1 from users guess to match list index offset.
-        #? In reality a human guess is list index + 1 because we count from 0
-
-        users_guess = get_users_choice()
-
-        users_guess_int = int(users_guess) -1
-
-        display_queen_loc(randomized_queen_location)
-        #print(f"users guess is {str(users_guess_int)}, queen loc is {randomized_queen_location} ")
-        if(users_guess_int == randomized_queen_location):
-            print("Congratulations, you got lucky")
-            print(f"You won {user_bet*2}")
-            # add currency to account
-            starting_money += (user_bet*2)
-            print(f"Total balance is now: {starting_money}")
+        bet = get_positive_int(f"Enter bet (1-{money}): ")
+        if bet == 0:
+            print("Bet must be at least 1.")
+        elif bet > money:
+            print("Insufficient funds.")
         else:
-            print("Sorry but your bet is incorrect")
-            starting_money = starting_money-user_bet
-            print(f"Total balance is now: {starting_money}")
-     
-        if(starting_money <= 0):
-            print("You lose, beat it loser")
-            break
-
-        elif get_yes_no("Would you like to play again "):
-            #loop again
-            print()
-        else: 
-            # if they enter no or n, break the program
-            break
+            return bet
 
 
-
-
-
-
-
-    # ? Display the cards with proper index
-    # ? Becasue its always 1-3 just manually print 1-3 cards
-    
 def get_users_choice():
+    # Show face-down cards and return user's guess 1-3.
     print_default_cards()
-        
-    while True:
-        users_guess = input("Find the queen: ")
-        if int(users_guess) >= 1 and int(users_guess) <=3:
-                # Valid value
-            break
-        else:
-            print("Invalid range: Please guess 1-3")
+    return get_int_range("Choose a card (1-3): ", 1, 3)
 
-    return users_guess
-            
 
-   
+def display_queen_loc(queen_loc):
+    # Reveal queen position
+    symbols = ["K", "K", "K"]
+    symbols[queen_loc - 1] = "Q"  # put queen in chosen slot
+    print("+-----+ +-----+ +-----+")
+    print("|     | |     | |     |")
+    print(f"|{symbols[0]:^5}| |{symbols[1]:^5}| |{symbols[2]:^5}|")
+    print("|     | |     | |     |")
+    print("+-----+ +-----+ +-----+")
+
+
 def print_default_cards():
+    # Show the 3 face-down card spots (just numbers).
     print("+-----+ +-----+ +-----+")
     print("|     | |     | |     |")
     print("|  1  | |  2  | |  3  |")
     print("|     | |     | |     |")
     print("+-----+ +-----+ +-----+")
 
-def display_queen_loc(queen_index):
-    # Because there are only 3 variations, we use hardcoded print values. This wouldn't be sustainable @ scale
-    if(queen_index == 0):
-        print("+-----+ +-----+ +-----+")
-        print("|     | |     | |     |")
-        print("|  Q  | |  K  | |  K  |")
-        print("|     | |     | |     |")
-        print("+-----+ +-----+ +-----+")
-    elif(queen_index == 1):
-        print("+-----+ +-----+ +-----+")
-        print("|     | |     | |     |")
-        print("|  K  | |  Q  | |  K  |")
-        print("|     | |     | |     |")
-        print("+-----+ +-----+ +-----+")
-    elif(queen_index == 2):
-        print("+-----+ +-----+ +-----+")
-        print("|     | |     | |     |")
-        print("|  K  | |  K  | |  Q  |")
-        print("|     | |     | |     |")
-        print("+-----+ +-----+ +-----+")
 
+def main():
+    money = 100  # starting bankroll
+    print("Three Card Monte - try to find the Queen to win your bet!\n")
 
-def get_users_money():
-    return starting_money
+    while money > 0:
+        queen_loc = random.randint(1, 3)  # new random spot each round
+        bet = get_users_bet(money)
+        guess = get_users_choice()
 
+        if guess == queen_loc:
+            # Per assignment: player "gains the amount of the bet" when correct
+            money += bet
+            print(f"Nice! You found the queen. You win ${bet}.")
+        else:
+            money -= bet
+            print("Incorrect.")
 
+        display_queen_loc(queen_loc)
+        print(f"Balance: ${money}\n")
 
-def get_users_bet(money):
-    #? Basesd on the example, assume that we inform them their current balance before they bet... makes sense tbh
-    print(f"You have ${money}")
-    while True:
-     users_bet = get_positive_int(f"How much would you like to bet? (Enter between 1-{money}) ")
-     if(users_bet > money):
-           print(f"Unavailible funds, you only have {money}")
-     elif (users_bet <= money and users_bet >= 1):   
-        break
-     
-    return users_bet
+        if money <= 0:
+            print("You lose, beat it loser.")
+            break
+        if not get_yes_no("Play again (Y/N)? "):
+            break
+
+    print("Thanks for playing!")
+
 
 if __name__ == "__main__":
     main()
-
