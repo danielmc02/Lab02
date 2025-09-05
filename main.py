@@ -55,7 +55,6 @@ def main():
 
     while money > 0:
         queen_loc = random.randint(1, 3)  # new random spot each round
-        print(queen_loc)
         bet = get_users_bet(money)
         guess = get_users_choice()
 
