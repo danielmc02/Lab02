@@ -28,7 +28,11 @@ def get_users_bet(money):
 
 def get_users_choice():
     # Show face-down cards and return user's guess 1-3.
-    print_default_cards()
+    print("+-----+ +-----+ +-----+")
+    print("|     | |     | |     |")
+    print("|  1  | |  2  | |  3  |")
+    print("|     | |     | |     |")
+    print("+-----+ +-----+ +-----+")
     return get_int_range("Choose a card (1-3): ", 1, 3)
 
 
@@ -43,21 +47,15 @@ def display_queen_loc(queen_loc):
     print("+-----+ +-----+ +-----+")
 
 
-def print_default_cards():
-    # Show the 3 face-down card spots (just numbers).
-    print("+-----+ +-----+ +-----+")
-    print("|     | |     | |     |")
-    print("|  1  | |  2  | |  3  |")
-    print("|     | |     | |     |")
-    print("+-----+ +-----+ +-----+")
-
-
 def main():
+
+    
     money = 100  # starting bankroll
     print("Three Card Monte - try to find the Queen to win your bet!\n")
 
     while money > 0:
         queen_loc = random.randint(1, 3)  # new random spot each round
+        print(queen_loc)
         bet = get_users_bet(money)
         guess = get_users_choice()
 
